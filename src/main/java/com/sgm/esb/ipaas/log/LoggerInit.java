@@ -22,9 +22,12 @@ public class LoggerInit {
     @Autowired
     private CamelContext context;
 
-    private static ExecutorService logExecutor;
+    @Autowired
+    private LoggerConfig config;
 
-    private static ProducerTemplate producerTemplate;
+    private ExecutorService logExecutor;
+
+    private ProducerTemplate producerTemplate;
 
     @PostConstruct
     public void initProducer() {
@@ -35,12 +38,12 @@ public class LoggerInit {
 
     private void initLogExecutor() {
         ThreadPoolProfile threadPoolProfile = new ThreadPoolProfile();
-        threadPoolProfile.setDefaultProfile(true);
+        threadPoolProfile.setDefaultProfile(false);
         threadPoolProfile.setId("log-profile");
-        threadPoolProfile.setPoolSize(20);
-        threadPoolProfile.setMaxPoolSize(20);
+        threadPoolProfile.setPoolSize(config.getPoolSize());
+        threadPoolProfile.setMaxPoolSize(config.getMaxPoolSize());
         threadPoolProfile.setKeepAliveTime(60L);
-        threadPoolProfile.setMaxQueueSize(2000);
+        threadPoolProfile.setMaxQueueSize(config.getMaxQueueSize());
         threadPoolProfile.setAllowCoreThreadTimeOut(false);
         threadPoolProfile.setRejectedPolicy(ThreadPoolRejectedPolicy.Abort);
 
@@ -68,16 +71,13 @@ public class LoggerInit {
                 log.error("fuse-tools ProduceTemplate stop fail:{}", e.getMessage());
             }
         }
-        if (logExecutor != null) {
-            logExecutor.shutdown();
-        }
     }
 
-    public static ExecutorService getLogExecutor() {
+    public ExecutorService getLogExecutor() {
         return logExecutor;
     }
 
-    public static ProducerTemplate getProducerTemplate() {
+    public ProducerTemplate getProducerTemplate() {
         return producerTemplate;
     }
 }

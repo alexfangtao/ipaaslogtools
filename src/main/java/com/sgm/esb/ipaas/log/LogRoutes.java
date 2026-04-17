@@ -17,7 +17,10 @@ public class LogRoutes extends RouteBuilder {
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json;charset=UTF-8"))
                 .doTry()
-                .to(config.getHttpPath() + "?connectTimeout=" + config.getConnectTimeout() + "&responseTimeout=" + config.getResponseTimeout())
+                .to(config.getHttpPath() + "?connectTimeout=" + config.getConnectTimeout()
+                        + "&responseTimeout=" + config.getResponseTimeout()
+                        + "&maxTotalConnections=" + config.getMaxTotalConnections()
+                        + "&connectionsPerRoute=" + config.getConnectionsPerRoute())
                 .doCatch(Exception.class)
                 .bean(GetErrorMSG.class, "errorHandler")
                 .end();

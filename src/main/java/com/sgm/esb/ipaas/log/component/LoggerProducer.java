@@ -1,15 +1,15 @@
 package com.sgm.esb.ipaas.log.component;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.sgm.esb.ipaas.log.LogEntity;
 import com.sgm.esb.ipaas.log.LoggerInit;
+import com.sgm.esb.ipaas.log.SpringContextUtil;
+import io.micrometer.common.util.StringUtils;
 import org.apache.camel.Exchange;
-import org.apache.camel.support.DefaultExchange;
 import org.apache.camel.support.DefaultProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -19,6 +19,7 @@ public class LoggerProducer extends DefaultProducer {
     private static final Logger log = LoggerFactory.getLogger(LoggerProducer.class);
 
     private final LoggerEndpoint endpoint;
+
 
     public LoggerProducer(LoggerEndpoint endpoint) {
         super(endpoint);
@@ -37,9 +38,8 @@ public class LoggerProducer extends DefaultProducer {
             logEntity.setCode(code);
             logEntity.setFromApp(this.endpoint.getFrom());
             logEntity.setToApp(this.endpoint.getTo());
-            String key = this.endpoint.getKey();
             logEntity.setMsgTs(System.currentTimeMillis());
-            String content = getContentByKey(exchange, key);
+            String content = exchange.getIn().getBody(String.class);
             // body大小 限制3m
             int limitSize = 3145728;
             byte[] bodyBytes = content.getBytes(StandardCharsets.UTF_8);
@@ -49,10 +49,7 @@ public class LoggerProducer extends DefaultProducer {
                 content = new String(bytesLimit, "UTF-8");
             }
             logEntity.setBody(content);
-
-            Exchange tempExchange = new DefaultExchange(exchange.getContext());
-            tempExchange.getIn().setBody(JSON.toJSONString(logEntity));
-            LoggerInit.getProducerTemplate().asyncSend("direct:fools-transaction", tempExchange);
+            SpringContextUtil.getBean(LoggerInit.class).getProducerTemplate().asyncSendBody("direct:fools-transaction", JSONObject.toJSONString(logEntity));
         } catch (Exception ex) {
             log.error("[Logger] component error: {}", ex.getMessage());
         }
@@ -63,23 +60,5 @@ public class LoggerProducer extends DefaultProducer {
         if (ObjectUtils.isEmpty(exchange.getProperty("X-SGM-LOG-ID"))) {
             exchange.setProperty("X-SGM-LOG-ID", UUID.randomUUID().toString());
         }
-    }
-
-    public String getContentByKey(Exchange exchange, String key) {
-        String content = "";
-
-        try {
-            if (ObjectUtils.isEmpty(key)) {
-                content = (String) exchange.getIn().getBody(String.class);
-            } else if (!ObjectUtils.isEmpty(exchange.getProperty(key))) {
-                content = (String) exchange.getProperty(key, String.class);
-            } else if (!ObjectUtils.isEmpty(exchange.getIn().getHeader(key))) {
-                content = (String) exchange.getIn().getHeader(key, String.class);
-            }
-        } catch (Exception var4) {
-            content = var4.getMessage();
-        }
-
-        return content;
     }
 }

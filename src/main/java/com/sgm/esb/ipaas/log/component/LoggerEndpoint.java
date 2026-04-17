@@ -29,8 +29,6 @@ public class LoggerEndpoint extends DefaultEndpoint {
             defaultValue = "code1"
     )
     private String code;
-    @UriParam
-    private String key;
     @UriParam(
             defaultValue = "NULL"
     )
@@ -68,9 +66,6 @@ public class LoggerEndpoint extends DefaultEndpoint {
         return this.code;
     }
 
-    public String getKey() {
-        return this.key;
-    }
 
     public String getFrom() {
         return this.from;
@@ -90,10 +85,6 @@ public class LoggerEndpoint extends DefaultEndpoint {
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
     public void setFrom(String from) {
