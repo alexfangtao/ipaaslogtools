@@ -13,7 +13,7 @@ public class LogRoutes extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("direct:fools-transaction")
+        from("direct:tools-transaction")
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json;charset=UTF-8"))
                 .doTry()

@@ -4,9 +4,9 @@ import com.alibaba.fastjson2.JSONObject;
 import com.sgm.esb.ipaas.log.LogEntity;
 import com.sgm.esb.ipaas.log.LoggerInit;
 import com.sgm.esb.ipaas.log.SpringContextUtil;
-import io.micrometer.common.util.StringUtils;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.DefaultProducer;
+import org.apache.camel.support.MessageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
@@ -34,12 +34,14 @@ public class LoggerProducer extends DefaultProducer {
             LogEntity logEntity = new LogEntity();
             logEntity.setSvcNo(exchange.getProperty("SVCNO", String.class));
             logEntity.setUuId(exchange.getProperty("X-SGM-LOG-ID", String.class));
-            logEntity.setTraceId(StringUtils.isEmpty(this.endpoint.getTraceId()) ? exchange.getIn().getHeader("traceparent", String.class) : this.endpoint.getTraceId());
+            String traceId = exchange.getProperty("X-TRACE-ID", String.class);
+            logEntity.setTraceId(org.apache.camel.util.ObjectHelper.isEmpty(traceId) ? exchange.getIn().getHeader("traceparent", String.class) : traceId);
             logEntity.setCode(code);
             logEntity.setFromApp(this.endpoint.getFrom());
             logEntity.setToApp(this.endpoint.getTo());
             logEntity.setMsgTs(System.currentTimeMillis());
-            String content = exchange.getIn().getBody(String.class);
+            String content = MessageHelper.extractBodyAsString(exchange.getIn());
+            if (content == null) { content = ""; }
             // body大小 限制3m
             int limitSize = 3145728;
             byte[] bodyBytes = content.getBytes(StandardCharsets.UTF_8);
@@ -49,7 +51,7 @@ public class LoggerProducer extends DefaultProducer {
                 content = new String(bytesLimit, "UTF-8");
             }
             logEntity.setBody(content);
-            SpringContextUtil.getBean(LoggerInit.class).getProducerTemplate().asyncSendBody("direct:fools-transaction", JSONObject.toJSONString(logEntity));
+            SpringContextUtil.getBean(LoggerInit.class).getProducerTemplate().asyncSendBody("direct:tools-transaction", JSONObject.toJSONString(logEntity));
         } catch (Exception ex) {
             log.error("[Logger] component error: {}", ex.getMessage());
         }

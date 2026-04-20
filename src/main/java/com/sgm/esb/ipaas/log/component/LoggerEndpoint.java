@@ -37,10 +37,6 @@ public class LoggerEndpoint extends DefaultEndpoint {
             defaultValue = "NULL"
     )
     private String to;
-    @UriParam(
-            defaultValue = "NULL"
-    )
-    private String traceId;
 
     public LoggerEndpoint(String endpointUri, Component component) {
         super(endpointUri, component);
@@ -75,10 +71,6 @@ public class LoggerEndpoint extends DefaultEndpoint {
         return this.to;
     }
 
-    public String getTraceId() {
-        return this.traceId;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -93,9 +85,5 @@ public class LoggerEndpoint extends DefaultEndpoint {
 
     public void setTo(String to) {
         this.to = to;
-    }
-
-    public void setTraceId(String traceId) {
-        this.traceId = traceId;
     }
 }
