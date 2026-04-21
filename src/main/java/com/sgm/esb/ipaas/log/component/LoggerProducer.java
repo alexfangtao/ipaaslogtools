@@ -1,6 +1,5 @@
 package com.sgm.esb.ipaas.log.component;
 
-import com.alibaba.fastjson2.JSONObject;
 import com.sgm.esb.ipaas.log.LogEntity;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
@@ -30,11 +29,11 @@ public class LoggerProducer extends DefaultProducer {
     }
 
     public void process(Exchange exchange) throws Exception {
+        LogEntity logEntity = new LogEntity();
         try {
             initialUUID(exchange);
             String code = this.endpoint.getCode();
 
-            LogEntity logEntity = new LogEntity();
             logEntity.setSvcNo(exchange.getProperty("SVCNO", String.class));
             logEntity.setUuId(exchange.getProperty("X-SGM-LOG-ID", String.class));
             String traceId = exchange.getProperty("X-TRACE-ID", String.class);
@@ -43,13 +42,11 @@ public class LoggerProducer extends DefaultProducer {
             logEntity.setFromApp(this.endpoint.getFrom());
             logEntity.setToApp(this.endpoint.getTo());
             logEntity.setMsgTs(System.currentTimeMillis());
-            // body大小 限制3m
-            int limitSize = 3145728;
-            String content = extractPartialBody(exchange, limitSize);
+            String content = extractBody(exchange);
             logEntity.setBody(content);
-            producerTemplate.asyncSendBody("direct:tools-transaction", JSONObject.toJSONString(logEntity));
+            producerTemplate.asyncSendBody("direct:tools-transaction", logEntity);
         } catch (Exception ex) {
-            log.error("[Logger] component error: {}", ex.getMessage());
+            log.error("[Logger] component error: traceId {}|{}" , logEntity.getTraceId(), ex.getMessage());
         }
 
     }
@@ -60,82 +57,17 @@ public class LoggerProducer extends DefaultProducer {
         }
     }
 
-    private static String extractPartialBody(Exchange exchange, int maxChars) {
+    private static String extractBody(Exchange exchange) {
+        int limitSize = 3145728;
         try {
-            Object body = exchange.getIn().getBody();
-
-            // 1. String 类型：直接处理
-            if (body instanceof String str) {
-                return str.length() <= maxChars ? str : str.substring(0, maxChars);
+            String body = MessageHelper.extractBodyAsString(exchange.getMessage());
+            if (body == null) {
+                return "";
             }
-
-            // 2. StreamCache 类型：优先使用 Camel 原生能力
-            if (body instanceof StreamCache cache) {
-                cache.reset();  // 确保从头开始
-
-                try (InputStream is = exchange.getContext().getTypeConverter()
-                        .convertTo(InputStream.class, exchange, cache)) {
-
-                    String result = readPartialFromStream(is, maxChars);
-                    cache.reset();  // 再次重置，保证后续路由可用
-                    return result;
-                } catch (Exception e) {
-                    log.error("读取 StreamCache 失败", e);
-                    cache.reset();
-                    return "日志读取报文错误";
-                }
-            }
-
-            // 3. 普通 InputStream：仅处理支持 mark/reset 的
-            if (body instanceof InputStream) {
-                InputStream is = (InputStream) body;
-                if (!is.markSupported()) {
-                    log.error("InputStream 不支持 mark/reset，无法安全截取");
-                    return "日志读取报文错误";
-                }
-
-                int maxBytes = maxChars * 4;  // UTF-8 保守估计
-                is.mark(maxBytes + 1);
-
-                try {
-                    String result = readPartialFromStream(is, maxChars);
-                    is.reset();
-                    return result;
-                } catch (Exception e) {
-                    log.error("读取 InputStream 失败", e);
-                    try {
-                        is.reset();
-                    } catch (IOException ignored) {
-                    }
-                    return "日志读取报文错误";
-                }
-            }
+            return body.length() <= limitSize ? body : body.substring(0, limitSize);
         } catch (Exception e) {
-            log.error("日志读取截取异常", e);
-            return "日志读取报文错误";
+            log.warn("[Logger] body 转换失败: {}", e.getMessage());
+            return "";
         }
-
-        return "不支持读取的报文类型";
-    }
-
-    private static String readPartialFromStream(InputStream is, int maxChars) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        try (Reader reader = new BufferedReader(
-                new InputStreamReader(is, StandardCharsets.UTF_8))) {
-
-            char[] buffer = new char[1024];
-            int totalChars = 0;
-            int charsRead;
-
-            while ((charsRead = reader.read(buffer)) != -1) {
-                if (totalChars + charsRead >= maxChars) {
-                    sb.append(buffer, 0, maxChars - totalChars);
-                    break;
-                }
-                sb.append(buffer, 0, charsRead);
-                totalChars += charsRead;
-            }
-        }
-        return sb.toString();
     }
 }

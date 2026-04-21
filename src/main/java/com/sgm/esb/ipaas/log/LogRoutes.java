@@ -2,6 +2,7 @@ package com.sgm.esb.ipaas.log;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.fastjson.FastjsonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ public class LogRoutes extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("direct:tools-transaction")
+                .marshal(new FastjsonDataFormat())
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json;charset=UTF-8"))
                 .doTry()

@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+
 @Component
 public class LoggerInit {
 
@@ -31,7 +34,6 @@ public class LoggerInit {
 
     @PostConstruct
     public void initProducer() {
-        context.addComponent("logger",new LoggerComponent());
         initLogExecutor();
         initProducerTemplate();
     }
@@ -47,8 +49,16 @@ public class LoggerInit {
         threadPoolProfile.setAllowCoreThreadTimeOut(false);
         threadPoolProfile.setRejectedPolicy(ThreadPoolRejectedPolicy.Abort);
 
-        logExecutor = context.getExecutorServiceManager()
+        threadPoolProfile.setRejectedPolicy(ThreadPoolRejectedPolicy.Abort);
+
+        ExecutorService executor = context.getExecutorServiceManager()
                 .newThreadPool(this, "logThreadPool", threadPoolProfile);
+
+        if (executor instanceof ThreadPoolExecutor tpe) {
+            tpe.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());
+        }
+
+        logExecutor = executor;
     }
 
     private void initProducerTemplate() {
@@ -71,6 +81,14 @@ public class LoggerInit {
                 log.error("fuse-tools ProduceTemplate stop fail:{}", e.getMessage());
             }
         }
+
+//        if (logExecutor != null) {
+//            try {
+//                logExecutor.close();
+//            } catch (Exception e) {
+//                log.error("fuse-tools logExecutor close fail:{}", e.getMessage());
+//            }
+//        }
     }
 
     public ExecutorService getLogExecutor() {
