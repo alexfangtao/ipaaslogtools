@@ -1,6 +1,8 @@
 package com.sgm.esb.ipaas.log.component;
 
 
+import com.sgm.esb.ipaas.log.LoggerInit;
+import com.sgm.esb.ipaas.log.SpringContextUtil;
 import org.apache.camel.Component;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
@@ -43,7 +45,7 @@ public class LoggerEndpoint extends DefaultEndpoint {
     }
 
     public Producer createProducer() throws Exception {
-        return new LoggerProducer(this);
+        return new LoggerProducer(this, SpringContextUtil.getBean(LoggerInit.class).getProducerTemplate());
     }
 
     public Consumer createConsumer(Processor processor) throws Exception {
