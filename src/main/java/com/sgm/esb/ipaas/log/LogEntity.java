@@ -1,9 +1,11 @@
 package com.sgm.esb.ipaas.log;
 
 
+import java.io.Serializable;
 
+public class LogEntity implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-public class LogEntity {
     /**
      * 接口编号
      */

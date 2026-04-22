@@ -1,5 +1,6 @@
 package com.sgm.esb.ipaas.log.component;
 
+import com.sgm.esb.ipaas.log.LoggerConfig;
 import com.sgm.esb.ipaas.log.LoggerInit;
 import org.apache.camel.Endpoint;
 import org.apache.camel.support.DefaultComponent;
@@ -11,11 +12,15 @@ public class LoggerComponent extends DefaultComponent {
 
     @Autowired
     private LoggerInit loggerInit;
+
+    @Autowired
+    private LoggerConfig config;
+
     public LoggerComponent() {
     }
 
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> params) throws Exception {
-        LoggerEndpoint endpoint = new LoggerEndpoint(uri, this, loggerInit);
+        LoggerEndpoint endpoint = new LoggerEndpoint(uri, this, loggerInit, config);
         this.setProperties(endpoint, params);
         endpoint.setName(remaining);
         return endpoint;

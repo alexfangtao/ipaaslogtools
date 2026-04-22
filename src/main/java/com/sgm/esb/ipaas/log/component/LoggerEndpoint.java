@@ -1,6 +1,7 @@
 package com.sgm.esb.ipaas.log.component;
 
 
+import com.sgm.esb.ipaas.log.LoggerConfig;
 import com.sgm.esb.ipaas.log.LoggerInit;
 import org.apache.camel.Component;
 import org.apache.camel.Consumer;
@@ -15,13 +16,15 @@ import org.apache.camel.support.DefaultEndpoint;
 @UriEndpoint(
         firstVersion = "1.0.0-SNAPSHOT",
         title = "Logger",
-        scheme = "logger",
-        syntax = "logger:name",
+        scheme = "ipaas-logger",
+        syntax = "ipaas-logger:name",
         producerOnly = true
 )
 public class LoggerEndpoint extends DefaultEndpoint {
 
     private LoggerInit loggerInit;
+
+    private LoggerConfig config;
 
     @UriPath
     @Metadata(
@@ -41,21 +44,18 @@ public class LoggerEndpoint extends DefaultEndpoint {
     )
     private String to;
 
-    public LoggerEndpoint(String endpointUri, Component component, LoggerInit loggerInit) {
+    public LoggerEndpoint(String endpointUri, Component component, LoggerInit loggerInit, LoggerConfig config) {
         super(endpointUri, component);
         this.loggerInit = loggerInit;
+        this.config = config;
     }
 
     public Producer createProducer() throws Exception {
-        return new LoggerProducer(this, loggerInit.getProducerTemplate());
+        return new LoggerProducer(this, loggerInit.getProducerTemplate(), config);
     }
 
     public Consumer createConsumer(Processor processor) throws Exception {
         throw new UnsupportedOperationException("You cannot consume messages with this endpoint: " + this.getEndpointUri());
-    }
-
-    public boolean isSingleton() {
-        return false;
     }
 
     public String getName() {

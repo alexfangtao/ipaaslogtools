@@ -1,17 +1,15 @@
 package com.sgm.esb.ipaas.log.component;
 
 import com.sgm.esb.ipaas.log.LogEntity;
+import com.sgm.esb.ipaas.log.LoggerConfig;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.StreamCache;
 import org.apache.camel.support.DefaultProducer;
 import org.apache.camel.support.MessageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class LoggerProducer extends DefaultProducer {
@@ -22,10 +20,13 @@ public class LoggerProducer extends DefaultProducer {
 
     private ProducerTemplate producerTemplate;
 
-    public LoggerProducer(LoggerEndpoint endpoint, ProducerTemplate producerTemplate) {
+    private LoggerConfig config;
+
+    public LoggerProducer(LoggerEndpoint endpoint, ProducerTemplate producerTemplate, LoggerConfig config) {
         super(endpoint);
         this.endpoint = endpoint;
         this.producerTemplate = producerTemplate;
+        this.config = config;
     }
 
     public void process(Exchange exchange) throws Exception {
@@ -57,14 +58,13 @@ public class LoggerProducer extends DefaultProducer {
         }
     }
 
-    private static String extractBody(Exchange exchange) {
-        int limitSize = 3145728;
+    private String extractBody(Exchange exchange) {
         try {
             String body = MessageHelper.extractBodyAsString(exchange.getMessage());
             if (body == null) {
                 return "";
             }
-            return body.length() <= limitSize ? body : body.substring(0, limitSize);
+            return body.length() <= config.getLimitSize() ? body : body.substring(0, config.getLimitSize());
         } catch (Exception e) {
             log.warn("[Logger] body 转换失败: {}", e.getMessage());
             return "";

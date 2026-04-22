@@ -51,4 +51,17 @@ public class LoggerConfig {
      * 日志保存接口http客户端单个域名连接数配置
      */
     private int connectionsPerRoute = 20;
+
+    /**
+     * 日志body字段压缩字符数配置，默认3M
+     */
+    private int limitSize = 3145728;
+
+    /**
+     * 是否强制使用纯内存 stream caching（关闭 spool 落盘）。
+     * 默认 true，适配 K8s 容器化部署。
+     * 如接入方业务存在大 body（> 10MB）且希望通过 spool 落盘避免 OOM，
+     * 可显式设为 false 保留宿主的 stream caching 配置。
+     */
+    private boolean forceMemoryOnlyStreamCaching = true;
 }

@@ -1,6 +1,5 @@
 package com.sgm.esb.ipaas.log;
 
-import com.sgm.esb.ipaas.log.component.LoggerComponent;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.apache.camel.CamelContext;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Component
@@ -49,8 +47,6 @@ public class LoggerInit {
         threadPoolProfile.setAllowCoreThreadTimeOut(false);
         threadPoolProfile.setRejectedPolicy(ThreadPoolRejectedPolicy.Abort);
 
-        threadPoolProfile.setRejectedPolicy(ThreadPoolRejectedPolicy.Abort);
-
         ExecutorService executor = context.getExecutorServiceManager()
                 .newThreadPool(this, "logThreadPool", threadPoolProfile);
 
@@ -66,7 +62,7 @@ public class LoggerInit {
         try {
             producerTemplate.start();
         } catch (Exception e) {
-            log.error("fuse-tools ProduceTemplate start fail:{}", e.getMessage());
+            log.error("iPaasLogTools ProduceTemplate start fail:{}", e.getMessage());
             throw e;
         }
     }
@@ -78,17 +74,9 @@ public class LoggerInit {
             try {
                 producerTemplate.stop();
             } catch (Exception e) {
-                log.error("fuse-tools ProduceTemplate stop fail:{}", e.getMessage());
+                log.error("iPaasLogTools ProduceTemplate stop fail:{}", e.getMessage());
             }
         }
-
-//        if (logExecutor != null) {
-//            try {
-//                logExecutor.close();
-//            } catch (Exception e) {
-//                log.error("fuse-tools logExecutor close fail:{}", e.getMessage());
-//            }
-//        }
     }
 
     public ExecutorService getLogExecutor() {
