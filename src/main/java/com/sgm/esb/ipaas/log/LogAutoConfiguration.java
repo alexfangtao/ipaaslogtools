@@ -18,8 +18,8 @@ public class LogAutoConfiguration {
 
     @Bean(name = "ipaas-logger")
     @ConditionalOnMissingBean
-    public LoggerComponent loggerComponent() {
-        return new LoggerComponent();
+    public LoggerComponent loggerComponent(LoggerInit loggerInit, LoggerConfig config) {
+        return new LoggerComponent(loggerInit, config);
     }
 
     @Bean

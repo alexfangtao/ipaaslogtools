@@ -49,9 +49,24 @@ public class LoggerInit {
 
         ExecutorService executor = context.getExecutorServiceManager()
                 .newThreadPool(this, "logThreadPool", threadPoolProfile);
-
-        if (executor instanceof ThreadPoolExecutor tpe) {
-            tpe.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());
+        switch (config.getPolicy()) {
+            case 1 :
+                break;
+            case 2 :
+                if (executor instanceof ThreadPoolExecutor tpe) {
+                    tpe.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardPolicy());
+                }
+                break;
+            case 4 :
+                if (executor instanceof ThreadPoolExecutor tpe) {
+                    tpe.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+                }
+                break;
+            default:
+                if (executor instanceof ThreadPoolExecutor tpe) {
+                    tpe.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());
+                }
+                break;
         }
 
         logExecutor = executor;

@@ -12,10 +12,13 @@ public class LogRoutes extends RouteBuilder {
     @Autowired
     LoggerConfig config;
 
+    private final FastjsonDataFormat fastjson = new FastjsonDataFormat();
+
     @Override
     public void configure() throws Exception {
+
         from("direct:tools-transaction")
-                .marshal(new FastjsonDataFormat())
+                .marshal(fastjson)
                 .setHeader(Exchange.HTTP_METHOD, constant("POST"))
                 .setHeader(Exchange.CONTENT_TYPE, constant("application/json;charset=UTF-8"))
                 .doTry()

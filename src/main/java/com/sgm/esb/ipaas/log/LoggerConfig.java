@@ -43,6 +43,11 @@ public class LoggerConfig {
     private int maxQueueSize = 2000;
 
     /**
+     * 日志保存接口线程池拒绝策略配置 1：Abort 2：Discard 3：DiscardOldest 4：CallerRuns
+     */
+    private int policy = 3;
+
+    /**
      * 日志保存接口http客户端最大连接数配置
      */
     private int maxTotalConnections = 200;

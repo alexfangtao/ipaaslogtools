@@ -10,13 +10,13 @@ import java.util.Map;
 
 public class LoggerComponent extends DefaultComponent {
 
-    @Autowired
-    private LoggerInit loggerInit;
+    private final LoggerInit loggerInit;
 
-    @Autowired
-    private LoggerConfig config;
+    private final LoggerConfig config;
 
-    public LoggerComponent() {
+    public LoggerComponent(LoggerInit loggerInit, LoggerConfig config) {
+        this.loggerInit = loggerInit;
+        this.config = config;
     }
 
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> params) throws Exception {
