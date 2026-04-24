@@ -1,5 +1,7 @@
-package com.sgm.esb.ipaas.log;
+package com.sgm.esb.ipaas.log.route;
 
+import com.sgm.esb.ipaas.log.config.LoggerConfig;
+import com.sgm.esb.ipaas.log.service.GetErrorMSG;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.fastjson.FastjsonDataFormat;

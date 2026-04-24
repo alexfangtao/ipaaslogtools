@@ -1,6 +1,8 @@
 package com.sgm.esb.ipaas.log;
 
 import com.sgm.esb.ipaas.log.component.LoggerComponent;
+import com.sgm.esb.ipaas.log.config.LoggerConfig;
+import com.sgm.esb.ipaas.log.service.LoggerInit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.spi.CamelContextCustomizer;
 import org.apache.camel.spi.StreamCachingStrategy;

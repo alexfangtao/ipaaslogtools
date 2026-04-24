@@ -1,8 +1,8 @@
 package com.sgm.esb.ipaas.log.component;
 
 
-import com.sgm.esb.ipaas.log.LoggerConfig;
-import com.sgm.esb.ipaas.log.LoggerInit;
+import com.sgm.esb.ipaas.log.config.LoggerConfig;
+import com.sgm.esb.ipaas.log.service.LoggerInit;
 import org.apache.camel.Component;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;

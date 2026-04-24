@@ -1,10 +1,9 @@
 package com.sgm.esb.ipaas.log.component;
 
-import com.sgm.esb.ipaas.log.LoggerConfig;
-import com.sgm.esb.ipaas.log.LoggerInit;
+import com.sgm.esb.ipaas.log.config.LoggerConfig;
+import com.sgm.esb.ipaas.log.service.LoggerInit;
 import org.apache.camel.Endpoint;
 import org.apache.camel.support.DefaultComponent;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 

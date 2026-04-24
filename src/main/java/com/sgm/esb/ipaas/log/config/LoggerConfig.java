@@ -1,4 +1,4 @@
-package com.sgm.esb.ipaas.log;
+package com.sgm.esb.ipaas.log.config;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

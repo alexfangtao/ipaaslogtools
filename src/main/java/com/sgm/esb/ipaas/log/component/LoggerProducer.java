@@ -1,20 +1,19 @@
 package com.sgm.esb.ipaas.log.component;
 
-import com.sgm.esb.ipaas.log.LogEntity;
-import com.sgm.esb.ipaas.log.LoggerConfig;
+import com.sgm.esb.ipaas.log.entity.LogEntity;
+import com.sgm.esb.ipaas.log.config.LoggerConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.support.DefaultProducer;
 import org.apache.camel.support.MessageHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
 import java.util.UUID;
 
+@Slf4j
 public class LoggerProducer extends DefaultProducer {
 
-    private static final Logger log = LoggerFactory.getLogger(LoggerProducer.class);
 
     private final LoggerEndpoint endpoint;
 
@@ -47,7 +46,7 @@ public class LoggerProducer extends DefaultProducer {
             logEntity.setBody(content);
             producerTemplate.asyncSendBody("direct:tools-transaction", logEntity);
         } catch (Exception ex) {
-            log.error("[Logger] component error: traceId {}|{}" , logEntity.getTraceId(), ex.getMessage());
+            log.error("[ipaas-logger] component error: traceId {}|{}" , logEntity.getTraceId(), ex.getMessage());
         }
 
     }
@@ -66,7 +65,7 @@ public class LoggerProducer extends DefaultProducer {
             }
             return body.length() <= config.getLimitSize() ? body : body.substring(0, config.getLimitSize());
         } catch (Exception e) {
-            log.warn("[Logger] body 转换失败: {}", e.getMessage());
+            log.warn("[ipaas-logger] body 转换失败: {}", e.getMessage());
             return "";
         }
     }

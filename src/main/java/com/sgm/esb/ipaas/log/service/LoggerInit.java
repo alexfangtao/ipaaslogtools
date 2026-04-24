@@ -1,24 +1,24 @@
-package com.sgm.esb.ipaas.log;
+package com.sgm.esb.ipaas.log.service;
 
+import com.sgm.esb.ipaas.log.config.LoggerConfig;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.impl.engine.DefaultProducerTemplate;
 import org.apache.camel.spi.ThreadPoolProfile;
 import org.apache.camel.util.concurrent.ThreadPoolRejectedPolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
+@Slf4j
 @Component
 public class LoggerInit {
 
-    private static final Logger log = LoggerFactory.getLogger(LoggerInit.class);
 
     @Autowired
     private CamelContext context;
@@ -77,7 +77,7 @@ public class LoggerInit {
         try {
             producerTemplate.start();
         } catch (Exception e) {
-            log.error("iPaasLogTools ProduceTemplate start fail:{}", e.getMessage());
+            log.error("[ipaas-logger] ProduceTemplate start fail:{}", e.getMessage());
             throw e;
         }
     }
@@ -89,7 +89,7 @@ public class LoggerInit {
             try {
                 producerTemplate.stop();
             } catch (Exception e) {
-                log.error("iPaasLogTools ProduceTemplate stop fail:{}", e.getMessage());
+                log.error("[ipaas-logger] ProduceTemplate stop fail:{}", e.getMessage());
             }
         }
     }
