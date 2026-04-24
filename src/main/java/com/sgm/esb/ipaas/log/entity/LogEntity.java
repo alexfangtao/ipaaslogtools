@@ -17,7 +17,7 @@ public class LogEntity implements Serializable {
     /**
      * 链路ID
      */
-    private String uuId;
+    private String uuid;
     /**
      * 业务id
      */

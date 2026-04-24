@@ -6,9 +6,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.fastjson.FastjsonDataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class LogRoutes extends RouteBuilder {
 
     @Autowired

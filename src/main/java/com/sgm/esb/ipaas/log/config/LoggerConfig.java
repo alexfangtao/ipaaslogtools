@@ -1,5 +1,7 @@
 package com.sgm.esb.ipaas.log.config;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -20,16 +22,19 @@ public class LoggerConfig {
     /**
      * 日志保存接口连接超时配置
      */
+    @Max(value = 3000, message = "【启动失败】配置项 'ipaas.logger.connectTimeout' 不能超过 3000 毫秒！")
     private int connectTimeout = 1000;
 
     /**
      * 日志保存接口响应超时配置
      */
+    @Max(value = 3000, message = "【启动失败】配置项 'ipaas.logger.responseTimeout' 不能超过 3000 毫秒！")
     private int responseTimeout = 1000;
 
     /**
      * 日志保存接口线程池线程数配置
      */
+    @Min(value = 20, message = "【启动失败】配置项 'ipaas.logger.poolSize' 不能小于 20 ！")
     private int poolSize = 20;
 
     /**
@@ -58,9 +63,9 @@ public class LoggerConfig {
     private int connectionsPerRoute = 20;
 
     /**
-     * 日志body字段压缩字符数配置，默认3M
+     * 日志body字段压缩字符数配置，默认1M
      */
-    private int limitSize = 3145728;
+    private int limitSize = 1048576;
 
     /**
      * 是否强制使用纯内存 stream caching（关闭 spool 落盘）。

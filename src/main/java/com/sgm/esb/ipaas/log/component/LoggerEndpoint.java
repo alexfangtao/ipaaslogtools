@@ -38,11 +38,11 @@ public class LoggerEndpoint extends DefaultEndpoint {
     @UriParam(
             defaultValue = "NULL"
     )
-    private String from;
+    private String fromApp;
     @UriParam(
             defaultValue = "NULL"
     )
-    private String to;
+    private String toApp;
 
     public LoggerEndpoint(String endpointUri, Component component, LoggerInit loggerInit, LoggerConfig config) {
         super(endpointUri, component);
@@ -67,12 +67,12 @@ public class LoggerEndpoint extends DefaultEndpoint {
     }
 
 
-    public String getFrom() {
-        return this.from;
+    public String getFromApp() {
+        return this.fromApp;
     }
 
-    public String getTo() {
-        return this.to;
+    public String getToApp() {
+        return this.toApp;
     }
 
     public void setName(String name) {
@@ -83,11 +83,11 @@ public class LoggerEndpoint extends DefaultEndpoint {
         this.code = code;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setFromApp(String fromApp) {
+        this.fromApp = fromApp;
     }
 
-    public void setTo(String to) {
-        this.to = to;
+    public void setToApp(String toApp) {
+        this.toApp = toApp;
     }
 }

@@ -10,13 +10,11 @@ import org.apache.camel.impl.engine.DefaultProducerTemplate;
 import org.apache.camel.spi.ThreadPoolProfile;
 import org.apache.camel.util.concurrent.ThreadPoolRejectedPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Slf4j
-@Component
 public class LoggerInit {
 
 

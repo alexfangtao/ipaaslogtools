@@ -1,5 +1,6 @@
 package com.sgm.esb.ipaas.log.component;
 
+import com.sgm.esb.ipaas.log.LogConstant;
 import com.sgm.esb.ipaas.log.entity.LogEntity;
 import com.sgm.esb.ipaas.log.config.LoggerConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -34,13 +35,13 @@ public class LoggerProducer extends DefaultProducer {
             initialUUID(exchange);
             String code = this.endpoint.getCode();
 
-            logEntity.setSvcNo(exchange.getProperty("SVCNO", String.class));
-            logEntity.setUuId(exchange.getProperty("X-SGM-LOG-ID", String.class));
-            String traceId = exchange.getProperty("X-TRACE-ID", String.class);
-            logEntity.setTraceId(org.apache.camel.util.ObjectHelper.isEmpty(traceId) ? exchange.getIn().getHeader("traceparent", String.class) : traceId);
+            logEntity.setSvcNo(exchange.getProperty(LogConstant.svcNo, String.class));
+            logEntity.setUuid(exchange.getProperty(LogConstant.logId, String.class));
+            String traceId = exchange.getProperty(LogConstant.traceId, String.class);
+            logEntity.setTraceId(traceId);
             logEntity.setCode(code);
-            logEntity.setFromApp(this.endpoint.getFrom());
-            logEntity.setToApp(this.endpoint.getTo());
+            logEntity.setFromApp(this.endpoint.getFromApp());
+            logEntity.setToApp(this.endpoint.getToApp());
             logEntity.setMsgTs(System.currentTimeMillis());
             String content = extractBody(exchange);
             logEntity.setBody(content);
@@ -52,8 +53,8 @@ public class LoggerProducer extends DefaultProducer {
     }
 
     public void initialUUID(Exchange exchange) {
-        if (ObjectUtils.isEmpty(exchange.getProperty("X-SGM-LOG-ID"))) {
-            exchange.setProperty("X-SGM-LOG-ID", UUID.randomUUID().toString());
+        if (ObjectUtils.isEmpty(exchange.getProperty(LogConstant.logId))) {
+            exchange.setProperty(LogConstant.logId, UUID.randomUUID().toString());
         }
     }
 
@@ -65,7 +66,7 @@ public class LoggerProducer extends DefaultProducer {
             }
             return body.length() <= config.getLimitSize() ? body : body.substring(0, config.getLimitSize());
         } catch (Exception e) {
-            log.warn("[ipaas-logger] body 转换失败: {}", e.getMessage());
+            log.error("[ipaas-logger] body 转换失败: {}", e.getMessage());
             return "";
         }
     }
